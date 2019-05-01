@@ -9,10 +9,10 @@ Furthermore, no code has been commented.
 
 ## Functionality
 The project can generate fractals. 
-interactive_fractal.py file can have interactive excape-time fractals, meaning that the user can zoom in and out by clicking on the image.
-fractals.py provides more extensive options of fractals, including (but not limited to) sierpinski's triangle and the Koch snowflake (sort of).
+- interactive_fractal.py file can have interactive excape-time fractals, meaning that the user can zoom in and out by clicking on the image.
+- fractals.py provides more extensive options of fractals, including (but not limited to) sierpinski's triangle and the Koch snowflake (sort of).
 
 ## Prerequisites
-numpy
-matplotlib
-numba
+- numpy
+- matplotlib
+- numba
