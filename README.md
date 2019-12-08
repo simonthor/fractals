@@ -4,8 +4,7 @@
 This project is made by Simon Thor in 2019.
 
 ## Overview
-It is an extremely poorly managed project, as I have never used Github before. There is no syncing and cool features like that.
-Furthermore, no code has been commented.
+It is an extremely poorly managed project, as I have never used Github before. Furthermore, no code has been commented. The code is also poorly written.
 
 ## Functionality
 The project can generate fractals. 
