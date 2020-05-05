@@ -4,7 +4,7 @@
 This project is made by Simon Thor in 2019.
 
 ## Overview
-It is an extremely poorly managed project, as I have never used Github before. Furthermore, no code has been commented. The code is also poorly written.
+The project is currently incactive.
 
 ## Functionality
 The project can generate fractals. 
