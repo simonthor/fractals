@@ -1,0 +1,6 @@
+name: fractals
+
+dependencies:
+  - python=3.8
+  - numpy
+  - matplotlib
