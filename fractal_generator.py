@@ -47,13 +47,13 @@ def generate_escape_time(plane: np.ndarray, iterations: int, et_function: Callab
 
 if __name__ == '__main__':
     colormap = 'twilight'
-    re_lim = (-2., 1.)
+    re_lim = (-2., 2.)
     im_lim = (-1.5, 1.5)
     resolution = 500
     iterations = 100
     et_function = lambda z, c: (np.abs(np.real(z)) + 1j*np.abs(np.imag(z)))**2 + c
 
-    complex_plane = np.linspace(*re_lim, resolution) + 1j*np.linspace(*im_lim[::-1], resolution)[:, np.newaxis]
+    complex_plane = np.linspace(*re_lim, resolution) + 1j*np.linspace(*im_lim, resolution)[:, np.newaxis]
     fractal_image, z_values = generate_escape_time(complex_plane, iterations, et_function)
     fig, axes = plt.subplots(ncols=2, sharex='all', sharey='all')
     axes[0].imshow(fractal_image, cmap=colormap, extent=re_lim+im_lim)
