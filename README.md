@@ -1,14 +1,12 @@
 # fractals
-
-## Author
-This project is made by Simon Thor in 2019.
+The code here is used to generate fractals.
 
 ## Overview
-The project is currently incactive.
+The instructions below are outdated. They will be updated as soon as possible.
 
 ## Functionality
 The project can generate fractals. 
-- interactive_fractal.py file can have interactive excape-time fractals, meaning that the user can zoom in and out by clicking on the image.
+- interactive_fractal.py file can have interactive escape-time fractals, meaning that the user can zoom in and out by clicking on the image.
 - fractals.py provides more extensive options of fractals, including (but not limited to) sierpinski's triangle and the Koch snowflake (sort of).
 
 ## Prerequisites
