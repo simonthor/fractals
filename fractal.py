@@ -16,13 +16,13 @@ class EscapeTimeFractal:
     z_values: np.ndarray = field(init=False)
     iteration_counts: np.ndarray = field(init=False)
 
-    calculate_plane: bool = False
+    #calculate_plane: bool = False
     et_f_args: Sequence = field(default_factory=list)
     et_f_kwargs: Dict = field(default_factory=dict)
 
     def __post_init__(self):
-        if self.calculate_plane:
-            self.complex_plane = np.linspace(*self.re_limit, self.resolution) + 1j * np.linspace(*self.im_limit, self.resolution)[:, np.newaxis]
+    #    if self.calculate_plane:
+        self.complex_plane = np.linspace(*self.re_limit, self.resolution) + 1j * np.linspace(*self.im_limit, self.resolution)[:, np.newaxis]
 
     def generate_escape_time(self, et_f_args, et_f_kwargs) -> Tuple[np.ndarray, np.ndarray]:
         """Generates the escape time fractal.
@@ -48,19 +48,26 @@ class EscapeTimeFractal:
         for i in range(self.iterations):
             exceeded_limit_after = np.abs(z_values) >= 2
             iteration_counts[exceeded_limit_after & ~exceeded_limit_before] = i
-            z_values[~exceeded_limit_after] = self.et_function(z_values[~exceeded_limit_after], self.complex_plane[~exceeded_limit_after],
-                                                               *et_f_args, **et_f_kwargs)
+            z_values[~exceeded_limit_after] = self.recursive_function(z_values[~exceeded_limit_after],
+                                                                      self.complex_plane[~exceeded_limit_after],
+                                                                      *et_f_args, **et_f_kwargs)
             exceeded_limit_before = exceeded_limit_after
         self.iteration_counts = iteration_counts
         self.z_values = z_values
 
         return iteration_counts, z_values
 
-    def plot(self, *plot_args, **plot_kwargs):
+    def plot(self, plotfig=True, savefig=False, image_name='', *plot_args, **plot_kwargs):
         """Plots the escape time fractal.
 
         Parameters
         ----------
+        plotfig : bool, optional
+            Whether to plot the image of the fractal or not. Default is True.
+        savefig : bool, optional
+            Whether to save the image of the fractal as an image or not. Deafult is False.
+        image_name : str, optional
+            Name of the image of the fractal. Only used if savefig = True.
         *plot_args : any, optional
             Input arguments for ax.imshow.
         **plot_kwargs : any, optional
@@ -80,4 +87,5 @@ class EscapeTimeFractal:
         axes[0].set_xlabel('$Re(z)$')
         axes[0].set_ylabel('$Im(z)$')
         plt.show()
+
         return fig, axes
