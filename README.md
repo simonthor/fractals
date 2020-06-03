@@ -1,18 +1,16 @@
 # fractals
 The code here is used to generate fractals.
 
-## Overview
-The instructions below are outdated. They will be updated as soon as possible.
+The project is currently being rewritten from scratch for easier maintainability and better features. 
 
 ## Functionality
-The project can generate fractals. 
+The functionality below only describes the old code in [old](./old/).
 - interactive_fractal.py file can have interactive escape-time fractals, meaning that the user can zoom in and out by clicking on the image.
 - fractals.py provides more extensive options of fractals, including (but not limited to) sierpinski's triangle and the Koch snowflake (sort of).
 
 ## Prerequisites
 - numpy
 - matplotlib
-- numba
 
 ## References
 - Colormap:             https://matplotlib.org/tutorials/colors/colormaps.html
