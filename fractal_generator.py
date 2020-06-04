@@ -46,17 +46,18 @@ def generate_escape_time(plane: np.ndarray, iterations: int, et_function: Callab
 
 
 def find_m_var_area(plane: np.ndarray, zoom_factor: float) -> Tuple[np.ndarray, np.ndarray, float]:
+
     x_factor, y_factor = np.round(np.array(plane.shape) / zoom_factor).astype(int)
-    stddev = 0
+    variance = 0
     segment_index_range = np.ones((2, 2)) * -1
     for x in range(plane.shape[0] - x_factor):
         for y in range(plane.shape[1] - y_factor):
             segment = plane[x:x+x_factor+1, y:y+y_factor+1]
-            segment_stddev = np.std(segment)
-            if segment_stddev > stddev:
-                stddev = segment_stddev
+            segment_variance = np.var(segment)
+            if segment_variance > variance:
+                variance = segment_variance
                 segment_index_range[:] = np.array([[x, x+x_factor+1], [y, y+y_factor+1]])
-    return *segment_index_range.astype(int), stddev
+    return *segment_index_range.astype(int), variance
 
 
 if __name__ == '__main__':
