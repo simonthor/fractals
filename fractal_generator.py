@@ -47,7 +47,8 @@ def generate_escape_time(plane: np.ndarray, iterations: int,
     return iteration_counter, z_values
 
 
-def max_var_segment(plane: np.ndarray, zoom_factor: int) -> np.ndarray:
+@njit
+def max_var_segment(plane: np.ndarray, zoom_factor: float) -> np.ndarray:
     """Identifies the segment of a 2D array with the largest variance.
 
     Parameters
@@ -62,16 +63,15 @@ def max_var_segment(plane: np.ndarray, zoom_factor: int) -> np.ndarray:
     segment_index : numpy.ndarray
         The start and end index of the segment with largest variance, e.g. [0 10].
         The first returned parameter is the x (row) range and the second parameter is the y (column) range.
-    variance : float
-        The variance for the selected segment.
 
     Notes
     ----------
     The variance measures how "spread out" the values in the array are.
     Variance is calculated as :math:`V = \frac{1}{n}\sum_{i=1}^n (x_i-\bar x)^2`.
     """
-
-    x_factor, y_factor = np.round(np.array(plane.shape) / zoom_factor).astype(int)
+    a = np.empty(2)
+    np.round(np.array(plane.shape) / zoom_factor, 0, a)
+    x_factor, y_factor = a.astype(np.int64)
     variance = 0
     segment_index_range = np.ones((2, 2)) * -1
     for x in range(plane.shape[0] - x_factor):
@@ -81,7 +81,7 @@ def max_var_segment(plane: np.ndarray, zoom_factor: int) -> np.ndarray:
             if segment_variance > variance:
                 variance = segment_variance
                 segment_index_range[:] = np.array([[x, x + x_factor + 1], [y, y + y_factor + 1]])
-    return segment_index_range.astype(int)
+    return segment_index_range.astype(np.int64)
 
 
 if __name__ == '__main__':
