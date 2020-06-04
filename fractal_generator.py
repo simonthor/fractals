@@ -45,8 +45,29 @@ def generate_escape_time(plane: np.ndarray, iterations: int, et_function: Callab
     return iteration_counter, z_values
 
 
-def find_m_var_area(plane: np.ndarray, zoom_factor: float) -> Tuple[np.ndarray, np.ndarray, float]:
+def max_var_section(plane: np.ndarray, zoom_factor: float) -> Tuple[np.ndarray, np.ndarray, float]:
+    """Calculates the section of a 2D array with the largest variance.
 
+    Parameters
+    ----------
+    plane : numpy.ndarray
+        Values that will be examined.
+    zoom_factor : int
+        How small each section should be. If `zoom_factor = 2` and `plane` has shape 100x100, then each section is 50x50.
+
+    Returns
+    ----------
+    segment_index : numpy.ndarray
+        The start and end index of the section with largest variance, e.g. [0 10].
+        The first returned parameter is the x (row) range and the second parameter is the y (column) range.
+    variance : float
+        The variance for the selected section.
+
+    Notes
+    ----------
+    The variance measures how "spread out" the values in the array are.
+    Variance is calculated as :math:`V = \frac{1}{n}\sum_{i=1}^n (x_i-\bar x)^2`
+    """
     x_factor, y_factor = np.round(np.array(plane.shape) / zoom_factor).astype(int)
     variance = 0
     segment_index_range = np.ones((2, 2)) * -1
