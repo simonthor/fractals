@@ -1,9 +1,11 @@
 import numpy as np
 from matplotlib import pyplot as plt
 from typing import Callable, Tuple
+from numba import njit
 
 
-def generate_escape_time(plane: np.ndarray, iterations: int, et_function: Callable[[np.ndarray, np.ndarray], np.ndarray],
+def generate_escape_time(plane: np.ndarray, iterations: int,
+                         et_function: Callable[[np.ndarray, np.ndarray], np.ndarray],
                          *et_f_args, **et_f_kwargs) -> Tuple[np.ndarray, np.ndarray]:
     """Generates an escape time fractal.
 
@@ -15,7 +17,7 @@ def generate_escape_time(plane: np.ndarray, iterations: int, et_function: Callab
         Maximum number of iterations that the mandelbrot formula will be used on a given number.
     et_function : function
         The function used to calculate the z value of each point in the complex plane.
-        Must at least accept two input arguments of the complex plane and the current z values.
+        Must at least accept (but do not have to use) 2 input arguments of the complex plane and the current z values.
     *et_f_args : any, optional
         Other input arguments for et_function.
     **et_f_kwargs : any, optional
@@ -45,40 +47,41 @@ def generate_escape_time(plane: np.ndarray, iterations: int, et_function: Callab
     return iteration_counter, z_values
 
 
-def max_var_section(plane: np.ndarray, zoom_factor: float) -> Tuple[np.ndarray, np.ndarray, float]:
-    """Calculates the section of a 2D array with the largest variance.
+def max_var_segment(plane: np.ndarray, zoom_factor: int) -> np.ndarray:
+    """Identifies the segment of a 2D array with the largest variance.
 
     Parameters
     ----------
     plane : numpy.ndarray
         Values that will be examined.
     zoom_factor : int
-        How small each section should be. If `zoom_factor = 2` and `plane` has shape 100x100, then each section is 50x50.
+        How small each segment should be. If `zoom_factor = 2` and `plane` has shape 100x100, then each segment is 50x50.
 
     Returns
     ----------
     segment_index : numpy.ndarray
-        The start and end index of the section with largest variance, e.g. [0 10].
+        The start and end index of the segment with largest variance, e.g. [0 10].
         The first returned parameter is the x (row) range and the second parameter is the y (column) range.
     variance : float
-        The variance for the selected section.
+        The variance for the selected segment.
 
     Notes
     ----------
     The variance measures how "spread out" the values in the array are.
-    Variance is calculated as :math:`V = \frac{1}{n}\sum_{i=1}^n (x_i-\bar x)^2`
+    Variance is calculated as :math:`V = \frac{1}{n}\sum_{i=1}^n (x_i-\bar x)^2`.
     """
+
     x_factor, y_factor = np.round(np.array(plane.shape) / zoom_factor).astype(int)
     variance = 0
     segment_index_range = np.ones((2, 2)) * -1
     for x in range(plane.shape[0] - x_factor):
         for y in range(plane.shape[1] - y_factor):
-            segment = plane[x:x+x_factor+1, y:y+y_factor+1]
+            segment = plane[x:x + x_factor + 1, y:y + y_factor + 1]
             segment_variance = np.var(segment)
             if segment_variance > variance:
                 variance = segment_variance
-                segment_index_range[:] = np.array([[x, x+x_factor+1], [y, y+y_factor+1]])
-    return *segment_index_range.astype(int), variance
+                segment_index_range[:] = np.array([[x, x + x_factor + 1], [y, y + y_factor + 1]])
+    return segment_index_range.astype(int)
 
 
 if __name__ == '__main__':
@@ -87,13 +90,29 @@ if __name__ == '__main__':
     im_lim = (-1.5, 1.5)
     resolution = 500
     iterations = 100
-    et_function = lambda z, c: (np.abs(np.real(z)) + 1j*np.abs(np.imag(z)))**2 + c
 
-    complex_plane = np.linspace(*re_lim, resolution) + 1j*np.linspace(*im_lim, resolution)[:, np.newaxis]
-    fractal_image, z_values = generate_escape_time(complex_plane, iterations, et_function)
-    fig, axes = plt.subplots(ncols=2, sharex='all', sharey='all')
-    axes[0].imshow(fractal_image, cmap=colormap, extent=re_lim+im_lim)
-    axes[1].imshow(np.abs(z_values), cmap=colormap, extent=re_lim+im_lim)
-    axes[0].set_xlabel('$Re(z)$')
-    axes[0].set_ylabel('$Im(z)$')
+    et_function = lambda z, c: (np.abs(np.real(z)) + 1j * np.abs(np.imag(z))) ** 2 + c
+
+    complex_plane = np.linspace(*re_lim, resolution) + 1j * np.linspace(*im_lim, resolution)[:, np.newaxis]
+    iter_count, z_values = generate_escape_time(complex_plane, iterations, et_function)
+    z_abs = np.abs(z_values)
+
+    plt.ioff()
+    fig, axes = plt.subplots(ncols=2, nrows=2)
+    zoomout_axes = axes[0]
+    zoomin_axes = axes[1]
+    zoomout_axes[0].imshow(iter_count, cmap=colormap, extent=re_lim + im_lim)
+    zoomout_axes[1].imshow(z_abs, cmap=colormap, extent=re_lim + im_lim)
+
+    x, y = max_var_segment(iter_count, 5)
+    iter_count_zoom = iter_count[x[0]:x[1], y[0]:y[1]]
+    zoomin_axes[0].imshow(iter_count_zoom, cmap=colormap,
+                          extent=(complex_plane[x[0], y[0]].real, complex_plane[x[1], y[1]].real,
+                                  complex_plane[x[0], y[0]].imag, complex_plane[x[1], y[1]].imag))
+
+    x, y = max_var_segment(z_abs, 5)
+    z_abs_zoom = z_abs[x[0]:x[1], y[0]:y[1]]
+    zoomin_axes[1].imshow(z_abs_zoom, cmap=colormap,
+                          extent=(complex_plane[x[0], y[0]].real, complex_plane[x[1], y[1]].real,
+                                  complex_plane[x[0], y[0]].imag, complex_plane[x[1], y[1]].imag))
     plt.show()
