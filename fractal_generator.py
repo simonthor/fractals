@@ -92,7 +92,7 @@ if __name__ == '__main__':
     resolution = 500
     iterations = 100
 
-    et_function = lambda z, c: (np.abs(np.real(z)) + 1j * np.abs(np.imag(z))) ** 2 + c
+    et_function = lambda z, c: (np.abs(z.real) + 1j * np.abs(z.imag)) ** 2 + c
     complex_plane = np.linspace(*re_lim, resolution) + 1j * np.linspace(*im_lim, resolution)[:, np.newaxis]
     iter_count, z_values = generate_escape_time(complex_plane, iterations, et_function)
     z_abs = np.abs(z_values)

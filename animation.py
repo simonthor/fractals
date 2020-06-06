@@ -13,7 +13,7 @@ if __name__ == "__main__":
     zoom_iter = 10
     zoom_factor = 1.5
 
-    et_function = lambda z, c: (np.abs(np.real(z)) + 1j * np.abs(np.imag(z))) ** 2 + c
+    et_function = lambda z, c: (np.abs(z.real) + 1j * np.abs(z.imag)) ** 2 + c
 
     plt.ioff()
     fig, ax = plt.subplots()
