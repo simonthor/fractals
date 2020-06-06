@@ -12,10 +12,10 @@ The functionality below only describes the old code in [old](./old/).
 See [environment.yml](environment.yml).
 
 ## TODO
-- [ ] SymPy support for `et_function`.
 - [ ] GPU-accelerated computation (cupy?)
 - [ ] AI for image identification
-- [ ] Test unique value variance calculation instead of variance calculation (although `unique` method is likely much slower).
+- [ ] Test unique value variance calculation instead of variance calculation (optional, is likely much slower).
+- [ ] SymPy support for `et_function`.
 
 ## References
 - Colormap:             https://matplotlib.org/tutorials/colors/colormaps.html
