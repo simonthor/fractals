@@ -9,8 +9,13 @@ The functionality below only describes the old code in [old](./old/).
 - fractals.py provides more extensive options of fractals, including (but not limited to) sierpinski's triangle and the Koch snowflake (sort of).
 
 ## Prerequisites
-- numpy
-- matplotlib
+See [environment.yml](environment.yml).
+
+## TODO
+[ ] - SymPy support for `et_function`.
+[ ] - GPU-accelerated computation (cupy?)
+[ ] - AI for image identification
+[ ] - Test unique value variance calculation instead of variance calculation (although `unique` method is likely much slower).
 
 ## References
 - Colormap:             https://matplotlib.org/tutorials/colors/colormaps.html
