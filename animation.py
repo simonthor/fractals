@@ -7,22 +7,23 @@ from fractal_generator import *
 if __name__ == "__main__":
     colormap = 'twilight'
     re_lim = (-2., 2.)
-    im_lim = (-1.5, 1.5)
+    im_lim = (-1.8, 0.2)
     resolution = 300
     iterations = 60
-    zoom_iter = 10
+    frames = 50
     zoom_factor = 1.1
+    video_filename = './burning_ship.mp4'
 
     et_function = lambda z, c: (np.abs(z.real) + 1j * np.abs(z.imag)) ** 2 + c
 
     plt.ioff()
     fig, ax = plt.subplots()
-    image = ax.imshow(np.zeros((2, 2)), cmap=colormap)
-    animation_writer = animation.FFMpegWriter(fps=10, bitrate=3000, extra_args=['-vcodec', 'libx264'])
+    image = ax.imshow(np.zeros((2, 2)), cmap=colormap, origin='lower')
+    animation_writer = animation.FFMpegWriter(fps=10, extra_args=['-vcodec', 'libx264'])
 
-    with animation_writer.saving(fig, './test.mp4', dpi=300):
-        for i in range(zoom_iter):
-            print(f'frame {i}')
+    with animation_writer.saving(fig, video_filename, dpi=300):
+        for i in range(frames):
+            # print(f'frame {i}')
             complex_plane = np.linspace(*re_lim, resolution) + 1j * np.linspace(*im_lim, resolution)[:, np.newaxis]
             iter_count, z_values = generate_escape_time(complex_plane, iterations, et_function)
             #z_abs = np.abs(z_values)
@@ -30,12 +31,15 @@ if __name__ == "__main__":
             image.set_data(iter_count)
             image.set_extent(re_lim + im_lim)
             image.autoscale()
+            #image.set_clim(iter_count.min(), iter_count.max())
             animation_writer.grab_frame()
+            printProgressBar(i + 1, frames, 'video:')
 
-            if i < zoom_iter - 1:
-                x_range, y_range = max_var_segment(iter_count, zoom_factor)
+            if i < frames - 1:
+                x_range, y_range = max_var_segment(iter_count, zoom_factor)#, np.int64(iterations))
                 re_lim = (complex_plane[x_range[0], y_range[0]].real, complex_plane[x_range[1], y_range[1]].real)
                 im_lim = (complex_plane[x_range[0], y_range[0]].imag, complex_plane[x_range[1], y_range[1]].imag)
+
 
 # def animate(data, index):
 #     """Function that animates all particles in 3D.

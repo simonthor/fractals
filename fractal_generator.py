@@ -4,6 +4,29 @@ from typing import Callable, Tuple
 from numba import njit
 
 
+def printProgressBar (iteration, total, prefix = '', suffix = '', decimals = 1, length = 100, fill = '█', printEnd = "\r"):
+    """
+    Call in a loop to create terminal progress bar
+    @params:
+     iteration   - Required  : current iteration (Int)
+     total       - Required  : total iterations (Int)
+     prefix      - Optional  : prefix string (Str)
+     suffix      - Optional  : suffix string (Str)
+     decimals    - Optional  : positive number of decimals in percent complete (Int)
+     length      - Optional  : character length of bar (Int)
+     fill        - Optional  : bar fill character (Str)
+     printEnd    - Optional  : end character (e.g. "\r", "\r\n") (Str)
+    Source: https://stackoverflow.com/questions/3173320/text-progress-bar-in-the-console
+    """
+    percent = ("{0:." + str(decimals) + "f}").format(100 * (iteration / float(total)))
+    filledLength = int(length * iteration // total)
+    bar = fill * filledLength + '-' * (length - filledLength)
+    print('\r%s |%s| %s%% %s' % (prefix, bar, percent, suffix), end = printEnd)
+    # Print New Line on Complete
+    if iteration == total:
+        print()
+
+
 def generate_escape_time(plane: np.ndarray, iterations: int,
                          et_function: Callable[[np.ndarray, np.ndarray], np.ndarray],
                          *et_f_args, **et_f_kwargs) -> Tuple[np.ndarray, np.ndarray]:
@@ -36,7 +59,7 @@ def generate_escape_time(plane: np.ndarray, iterations: int,
     """
 
     z_values = np.copy(plane)
-    iteration_counter = np.zeros(z_values.shape, dtype=int)
+    iteration_counter = np.ones(z_values.shape, dtype=int)*iterations
     exceeded_limit_before = np.zeros(z_values.shape, dtype=bool)
     for i in range(iterations):
         exceeded_limit_after = np.abs(z_values) >= 2
@@ -45,6 +68,42 @@ def generate_escape_time(plane: np.ndarray, iterations: int,
                                                       *et_f_args, **et_f_kwargs)
         exceeded_limit_before = exceeded_limit_after
     return iteration_counter, z_values
+
+
+@njit
+def faster_unique(array: np.ndarray, max_val: np.int64) -> np.int64:
+    unique_vals = np.zeros(max_val, dtype=np.uint8)
+    unique_vals[array.ravel()] = 1
+    return unique_vals.sum()
+
+
+@njit
+def new_variance(array: np.ndarray, iterations: np.int64) -> np.float64:
+    vertical = np.diff(array)
+    horizontal = np.diff(array.T)
+    return faster_unique(vertical, iterations) + faster_unique(horizontal, iterations)
+
+
+@njit
+def max_var_segment_diff(plane: np.ndarray, zoom_factor: float, iterations: np.int64) -> np.ndarray:
+    a = np.empty(2)
+    np.round(np.array(plane.shape) / zoom_factor, 0, a)
+    x_factor, y_factor = a.astype(np.int64)
+    variance = 0
+    segment_index_range = np.ones((2, 2)) * -1
+    # TODO: put np.diff outside of loop for faster computation.
+    #vertical_diff = np.diff(plane, axis=0)
+    #horizontal_diff = np.diff(plane, axis=1)
+
+    for x in range(plane.shape[0] - x_factor):
+        for y in range(plane.shape[1] - y_factor):
+            segment = plane[x:x + x_factor + 1, y:y + y_factor + 1]
+            segment_variance = new_variance(segment.astype(np.int64), iterations)
+            if segment_variance > variance:
+                variance = segment_variance
+                segment_index_range[:] = np.array([[x, x + x_factor], [y, y + y_factor]])
+
+    return segment_index_range.astype(np.int64)
 
 
 @njit
