@@ -11,7 +11,7 @@ if __name__ == "__main__":
     resolution = 300
     iterations = 60
     zoom_iter = 10
-    zoom_factor = 1.5
+    zoom_factor = 1.1
 
     et_function = lambda z, c: (np.abs(z.real) + 1j * np.abs(z.imag)) ** 2 + c
 

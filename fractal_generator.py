@@ -77,10 +77,10 @@ def max_var_segment(plane: np.ndarray, zoom_factor: float) -> np.ndarray:
     for x in range(plane.shape[0] - x_factor):
         for y in range(plane.shape[1] - y_factor):
             segment = plane[x:x + x_factor + 1, y:y + y_factor + 1]
-            segment_variance = (segment - segment.mean())**2
+            segment_variance = ((segment - segment.mean())**2).sum()
             if segment_variance > variance:
                 variance = segment_variance
-                segment_index_range[:] = np.array([[x, x + x_factor + 1], [y, y + y_factor + 1]])
+                segment_index_range[:] = np.array([[x, x + x_factor], [y, y + y_factor]])
 
     return segment_index_range.astype(np.int64)
 

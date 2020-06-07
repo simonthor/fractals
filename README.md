@@ -15,7 +15,7 @@ See [environment.yml](environment.yml).
 - [ ] GPU-accelerated computation (cupy?)
 - [ ] AI for image identification
 - [ ] Test unique value variance calculation instead of variance calculation (optional, is likely much slower).
-- [ ] SymPy support for `et_function`.
+- [ ] SymPy support for `et_function` (optional).
 
 ## References
 - Colormap:             https://matplotlib.org/tutorials/colors/colormaps.html
