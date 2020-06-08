@@ -10,7 +10,7 @@ class EscapeTimeFractal:
     im_limit: Tuple[float, float]
     resolution: int
     iterations: int
-    recursive_function: Callable#[[np.ndarray, np.ndarray], np.ndarray]
+    et_function: Callable#[[np.ndarray, np.ndarray], np.ndarray]
 
     complex_plane: np.ndarray = field(init=False)
     z_values: np.ndarray = field(init=False)
@@ -21,7 +21,7 @@ class EscapeTimeFractal:
     et_f_kwargs: Dict = field(default_factory=dict)
 
     def __post_init__(self):
-    #    if self.calculate_plane:
+    #   if self.calculate_plane:
         self.complex_plane = np.linspace(*self.re_limit, self.resolution) + 1j * np.linspace(*self.im_limit, self.resolution)[:, np.newaxis]
 
     def generate_escape_time(self, et_f_args, et_f_kwargs) -> Tuple[np.ndarray, np.ndarray]:
@@ -48,14 +48,26 @@ class EscapeTimeFractal:
         for i in range(self.iterations):
             exceeded_limit_after = np.abs(z_values) >= 2
             iteration_counts[exceeded_limit_after & ~exceeded_limit_before] = i
-            z_values[~exceeded_limit_after] = self.recursive_function(z_values[~exceeded_limit_after],
-                                                                      self.complex_plane[~exceeded_limit_after],
-                                                                      *et_f_args, **et_f_kwargs)
+            z_values[~exceeded_limit_after] = self.et_function(z_values[~exceeded_limit_after],
+                                                               self.complex_plane[~exceeded_limit_after],
+                                                               *et_f_args, **et_f_kwargs)
             exceeded_limit_before = exceeded_limit_after
         self.iteration_counts = iteration_counts
         self.z_values = z_values
 
         return iteration_counts, z_values
+
+    # TODO: change this to be able to automate any parameter? Probably results in lower efficiency but more freedom.
+    def animate(self, parameter: str, *args, **kwargs):
+        animation_function = getattr(self, f'_{parameter}')
+        return animation_function(*args, **kwargs)
+
+    def _zoom(self):
+        pass
+
+    def _change_et_function(self):
+        pass
+
 
     def plot(self, plotfig=True, savefig=False, image_name='', *plot_args, **plot_kwargs):
         """Plots the escape time fractal.
