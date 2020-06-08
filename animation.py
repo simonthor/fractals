@@ -36,7 +36,7 @@ if __name__ == "__main__":
             printProgressBar(i + 1, frames, 'video:')
 
             if i < frames - 1:
-                x_range, y_range = max_var_segment(iter_count, zoom_factor)#, np.int64(iterations))
+                x_range, y_range = max_var_segment_diff(iter_count, zoom_factor, iterations)#, np.int64(iterations))
                 re_lim = (complex_plane[x_range[0], y_range[0]].real, complex_plane[x_range[1], y_range[1]].real)
                 im_lim = (complex_plane[x_range[0], y_range[0]].imag, complex_plane[x_range[1], y_range[1]].imag)
 
