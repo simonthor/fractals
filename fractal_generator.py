@@ -26,7 +26,6 @@ def print_progressbar(iteration, total, prefix ='', suffix ='', decimals = 1, le
         print()
 
 
-# TODO: add njit here?
 def generate_escape_time(plane: np.ndarray, iterations: int,
                          et_function: Callable[[np.ndarray, np.ndarray], np.ndarray],
                          *et_f_args, **et_f_kwargs) -> Tuple[np.ndarray, np.ndarray]:
