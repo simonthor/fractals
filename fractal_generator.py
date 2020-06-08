@@ -1,68 +1,9 @@
 import numpy as np
 from matplotlib import pyplot as plt
 from typing import Callable, Tuple
-from numba import njit
 
 
-@njit
-def entr(array: np.ndarray) -> np.ndarray:
-    entropy = np.zeros(array.shape) - np.Inf
-    above_zero = array > 0
-    entropy[above_zero] = -array[above_zero] * np.log(array[above_zero])
-    is_zero = array == 0
-    entropy[is_zero] = 0
-    return entropy
-
-
-@njit
-def entropy(array: np.ndarray, max_val: np.int64, base=None):
-    """Calculate the entropy of a distribution for given probability values.
-    If only probabilities `pk` are given, the entropy is calculated as
-    ``S = -sum(pk * log(pk), axis=axis)``.
-    If `qk` is not None, then compute the Kullback-Leibler divergence
-    ``S = sum(pk * log(pk / qk), axis=axis)``.
-    This routine will normalize `pk` and `qk` if they don't sum to 1.
-    Parameters
-    ----------
-    pk : sequence
-        Defines the (discrete) distribution. ``pk[i]`` is the (possibly
-        unnormalized) probability of event ``i``.
-    qk : sequence, optional
-        Sequence against which the relative entropy is computed. Should be in
-        the same format as `pk`.
-    base : float, optional
-        The logarithmic base to use, defaults to ``e`` (natural logarithm).
-    axis: int, optional
-        The axis along which the entropy is calculated. Default is 0.
-    Returns
-    -------
-    S : float
-        The calculated entropy.
-    Examples
-    --------
-    >>> from scipy.stats import entropy
-    Bernoulli trial with different p.
-    The outcome of a fair coin is the most uncertain:
-    >>> entropy([1/2, 1/2], base=2)
-    1.0
-    The outcome of a biased coin is less uncertain:
-    >>> entropy([9/10, 1/10], base=2)
-    0.46899559358928117
-    Relative entropy:
-    >>> entropy([1/2, 1/2], qk=[9/10, 1/10])
-    0.5108256237659907
-    """
-    pk = np.bincount(array.ravel())
-    pk_norm = pk/pk.sum()
-    S = entr(pk_norm).sum()
-
-    if base is not None:
-        S /= np.log(base)
-
-    return S
-
-
-def printProgressBar (iteration, total, prefix = '', suffix = '', decimals = 1, length = 100, fill = '█', printEnd = "\r"):
+def print_progressbar(iteration, total, prefix ='', suffix ='', decimals = 1, length = 100, fill ='█', printEnd ="\r"):
     """
     Call in a loop to create terminal progress bar
     @params:
@@ -79,12 +20,13 @@ def printProgressBar (iteration, total, prefix = '', suffix = '', decimals = 1, 
     percent = ("{0:." + str(decimals) + "f}").format(100 * (iteration / float(total)))
     filledLength = int(length * iteration // total)
     bar = fill * filledLength + '-' * (length - filledLength)
-    print('\r%s |%s| %s%% %s' % (prefix, bar, percent, suffix), end = printEnd)
+    print('\r%s |%s| %s%% %s' % (prefix, bar, percent, suffix), end=printEnd)
     # Print New Line on Complete
     if iteration == total:
         print()
 
 
+# TODO: add njit here?
 def generate_escape_time(plane: np.ndarray, iterations: int,
                          et_function: Callable[[np.ndarray, np.ndarray], np.ndarray],
                          *et_f_args, **et_f_kwargs) -> Tuple[np.ndarray, np.ndarray]:
@@ -126,81 +68,6 @@ def generate_escape_time(plane: np.ndarray, iterations: int,
                                                       *et_f_args, **et_f_kwargs)
         exceeded_limit_before = exceeded_limit_after
     return iteration_counter, z_values
-
-
-@njit
-def faster_unique(array: np.ndarray, max_val: np.int64) -> np.int64:
-    unique_vals = np.zeros(max_val, dtype=np.uint8)
-    unique_vals[array.ravel()] = 1
-    return unique_vals.sum()
-
-
-@njit
-def new_variance(array: np.ndarray, iterations: np.int64) -> np.float64:
-    vertical = np.diff(array)
-    horizontal = np.diff(array.T)
-    return faster_unique(vertical, iterations) + faster_unique(horizontal, iterations)
-
-
-@njit
-def max_var_segment_diff(plane: np.ndarray, zoom_factor: float, iterations: np.int64) -> np.ndarray:
-    a = np.empty(2)
-    np.round(np.array(plane.shape) / zoom_factor, 0, a)
-    x_factor, y_factor = a.astype(np.int64)
-    variance = 0
-    segment_index_range = np.ones((2, 2)) * -1
-    # TODO: put np.diff outside of loop for faster computation.
-    #vertical_diff = np.diff(plane, axis=0)
-    #horizontal_diff = np.diff(plane, axis=1)
-
-    for x in range(plane.shape[0] - x_factor):
-        for y in range(plane.shape[1] - y_factor):
-            segment = plane[x:x + x_factor + 1, y:y + y_factor + 1]
-            segment_variance = entropy(segment.astype(np.int64), iterations)
-            if segment_variance > variance:
-                variance = segment_variance
-                segment_index_range[:] = np.array([[x, x + x_factor], [y, y + y_factor]])
-
-    return segment_index_range.astype(np.int64)
-
-
-@njit
-def max_var_segment(plane: np.ndarray, zoom_factor: float) -> np.ndarray:
-    """Identifies the segment of a 2D array which is the most interesting.
-
-    Parameters
-    ----------
-    plane : numpy.ndarray
-        Values that will be examined.
-    zoom_factor : int
-        How small each segment should be. If `zoom_factor = 2` and `plane` has shape 100x100, then each segment is 50x50.
-
-    Returns
-    ----------
-    segment_index : numpy.ndarray
-        The start and end index of the segment with largest variance, e.g. [0 10].
-        The first returned parameter is the x (row) range and the second parameter is the y (column) range.
-
-    Notes
-    ----------
-    The algorithm currently used for calcualting how interesting a region is is shannon entropy [1]_.
-
-    RefreSee https://en.wiktionary.org/wiki/Shannon_entropy
-    """
-    a = np.empty(2)
-    np.round(np.array(plane.shape) / zoom_factor, 0, a)
-    x_factor, y_factor = a.astype(np.int64)
-    variance = 0
-    segment_index_range = np.ones((2, 2)) * -1
-    for x in range(plane.shape[0] - x_factor):
-        for y in range(plane.shape[1] - y_factor):
-            segment = plane[x:x + x_factor + 1, y:y + y_factor + 1]
-            segment_variance = ((segment - segment.mean())**2).sum()
-            if segment_variance > variance:
-                variance = segment_variance
-                segment_index_range[:] = np.array([[x, x + x_factor], [y, y + y_factor]])
-
-    return segment_index_range.astype(np.int64)
 
 
 if __name__ == '__main__':
