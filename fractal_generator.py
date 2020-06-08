@@ -2,11 +2,19 @@ import numpy as np
 from matplotlib import pyplot as plt
 from typing import Callable, Tuple
 
+# TODO: implement time estimation function decorator
+def timer(function, total):
+    old_time = np.zeros(total)
+    for i in range(total):
+        yield i
+        new_time = time.time()
+
 
 def print_progressbar(iteration, total, prefix ='', suffix ='', decimals = 1, length = 100, fill ='█', printEnd ="\r"):
-    """
-    Call in a loop to create terminal progress bar
-    @params:
+    """Call in a loop to create terminal progress bar
+
+    Parameters
+    -------
      iteration   - Required  : current iteration (Int)
      total       - Required  : total iterations (Int)
      prefix      - Optional  : prefix string (Str)

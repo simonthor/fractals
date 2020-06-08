@@ -4,14 +4,16 @@ import matplotlib.animation as animation
 from interesting_region import *
 from fractal_generator import *
 
+
 if __name__ == "__main__":
     colormap = 'inferno'
     re_lim = (-2., 2.)
     im_lim = (-1.8, 0.2)
-    resolution = 300
+    resolution = 500
     iterations = 60
-    frames = 50
-    zoom_factor = 1.1
+    frames = 200
+    zoom_factor = 1.01
+    fps = 20
     video_filename = './burning_ship.mp4'
 
     et_function = lambda z, c: (np.abs(z.real) + 1j * np.abs(z.imag)) ** 2 + c
@@ -19,7 +21,7 @@ if __name__ == "__main__":
     plt.ioff()
     fig, ax = plt.subplots()
     image = ax.imshow(np.zeros((2, 2)), cmap=colormap, origin='lower')
-    animation_writer = animation.FFMpegWriter(fps=10, extra_args=['-vcodec', 'libx264'])
+    animation_writer = animation.FFMpegWriter(fps=fps, extra_args=['-vcodec', 'libx264'])
 
     with animation_writer.saving(fig, video_filename, dpi=300):
         for i in range(frames):
