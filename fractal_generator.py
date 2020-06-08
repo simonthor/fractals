@@ -1,6 +1,7 @@
 import numpy as np
 from matplotlib import pyplot as plt
 from typing import Callable, Tuple
+import sys
 
 
 def generate_escape_time(plane: np.ndarray, iterations: int,
@@ -28,10 +29,6 @@ def generate_escape_time(plane: np.ndarray, iterations: int,
         Number of iterations before |z| >= 2. Same shape as plane.
     z_values : numpy.ndarray
         The values of the complex numbers right after |z| >= 2. Same shape as plane.
-
-    Notes
-    ----------
-    The mandelbrot set uses the formula :math:`z_i = z_{i-1}^2+c`
     """
 
     z_values = np.copy(plane)
@@ -47,33 +44,20 @@ def generate_escape_time(plane: np.ndarray, iterations: int,
 
 
 if __name__ == '__main__':
-    colormap = 'twilight'
+    colormap = sys.argv[1]
     re_lim = (-2., 2.)
     im_lim = (-1.5, 1.5)
     resolution = 500
     iterations = 100
 
-    et_function = lambda z, c: (np.abs(z.real) + 1j * np.abs(z.imag)) ** 2 + c
+    et_function = lambda z, c: (z-c)**1.5
     complex_plane = np.linspace(*re_lim, resolution) + 1j * np.linspace(*im_lim, resolution)[:, np.newaxis]
     iter_count, z_values = generate_escape_time(complex_plane, iterations, et_function)
     z_abs = np.abs(z_values)
 
-    plt.ioff()
-    fig, axes = plt.subplots(ncols=2, nrows=2)
-    zoomout_axes = axes[0]
-    zoomin_axes = axes[1]
-    zoomout_axes[0].imshow(iter_count, cmap=colormap, extent=re_lim + im_lim)
-    zoomout_axes[1].imshow(z_abs, cmap=colormap, extent=re_lim + im_lim)
-
-    x, y = max_var_segment(iter_count, 5)
-    iter_count_zoom = iter_count[x[0]:x[1], y[0]:y[1]]
-    zoomin_axes[0].imshow(iter_count_zoom, cmap=colormap,
-                          extent=(complex_plane[x[0], y[0]].real, complex_plane[x[1], y[1]].real,
-                                  complex_plane[x[0], y[0]].imag, complex_plane[x[1], y[1]].imag))
-
-    x, y = max_var_segment(z_abs, 5)
-    z_abs_zoom = z_abs[x[0]:x[1], y[0]:y[1]]
-    zoomin_axes[1].imshow(z_abs_zoom, cmap=colormap,
-                          extent=(complex_plane[x[0], y[0]].real, complex_plane[x[1], y[1]].real,
-                                  complex_plane[x[0], y[0]].imag, complex_plane[x[1], y[1]].imag))
+    fig, axes = plt.subplots(ncols=2, nrows=1)
+    plot_kwargs = dict(cmap=colormap, extent=re_lim + im_lim, origin='lower')
+    axes[0].imshow(iter_count, **plot_kwargs)
+    axes[1].imshow(z_abs, **plot_kwargs)
+    fig.tight_layout()
     plt.show()
