@@ -2,6 +2,7 @@ import numpy as np
 from matplotlib import pyplot as plt
 from typing import Callable, Tuple
 from numba import njit
+from skimage.measure import shannon_entropy
 
 
 def printProgressBar (iteration, total, prefix = '', suffix = '', decimals = 1, length = 100, fill = '█', printEnd = "\r"):
@@ -106,7 +107,7 @@ def max_var_segment_diff(plane: np.ndarray, zoom_factor: float, iterations: np.i
     return segment_index_range.astype(np.int64)
 
 
-@njit
+#@njit
 def max_var_segment(plane: np.ndarray, zoom_factor: float) -> np.ndarray:
     """Identifies the segment of a 2D array with the largest variance.
 
@@ -136,7 +137,7 @@ def max_var_segment(plane: np.ndarray, zoom_factor: float) -> np.ndarray:
     for x in range(plane.shape[0] - x_factor):
         for y in range(plane.shape[1] - y_factor):
             segment = plane[x:x + x_factor + 1, y:y + y_factor + 1]
-            segment_variance = ((segment - segment.mean())**2).sum()
+            segment_variance = shannon_entropy(segment)#((segment - segment.mean())**2).sum()
             if segment_variance > variance:
                 variance = segment_variance
                 segment_index_range[:] = np.array([[x, x + x_factor], [y, y + y_factor]])

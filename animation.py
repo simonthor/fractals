@@ -5,7 +5,7 @@ from fractal_generator import *
 
 
 if __name__ == "__main__":
-    colormap = 'twilight'
+    colormap = 'inferno'
     re_lim = (-2., 2.)
     im_lim = (-1.8, 0.2)
     resolution = 300
