@@ -6,6 +6,7 @@ from progress import *
 from typing import Iterable
 
 
+# TODO: change re_lim and im_lim to plane_range for better support for factory_args
 def animate(filename: str, frames: int, colormap: str, iter_args: dict = {}, const_args: dict = {}, factory_args: dict = {},
             graph_type: str = 'i', dpi: int = 300, anim_kwargs: dict = {'fps': 24}):
 

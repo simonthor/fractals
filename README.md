@@ -14,7 +14,6 @@ See [environment.yml](environment.yml).
 ## TODO
 - [ ] Add docstrings
 - [ ] GPU-accelerated computation (`cupy`?)
-- [ ] AI for image identification
 
 ## References
 - Colormap:             https://matplotlib.org/tutorials/colors/colormaps.html
