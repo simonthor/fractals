@@ -27,7 +27,7 @@ if __name__ == "__main__":
     with animation_writer.saving(fig, video_filename, dpi=300):
         for i in range(frames):
             # print(f'frame {i}')
-            complex_plane = np.linspace(*re_lim, resolution) + 1j * np.linspace(*im_lim, resolution)[:, np.newaxis]
+
             iter_count, z_values = generate_escape_time(complex_plane, iterations, et_function)
             #z_abs = np.abs(z_values)
 
