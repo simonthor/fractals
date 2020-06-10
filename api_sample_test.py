@@ -1,7 +1,7 @@
 import render
 import numpy as np
 from numba import njit
-
+from interesting_region import find_interesting_region
 
 @njit
 def et_function(z, c):
@@ -9,5 +9,4 @@ def et_function(z, c):
 
 
 if __name__ == '__main__':
-    render.animate('test_video.mp4', 50, 'twilight', graph_type='z',
-                   const_args={'iterations': 60, 're_lim': (-2, 2), 'im_lim': (-2, 2), 'resolution': 200, 'et_function': et_function})
+    render.auto_zoom((-2, 2), (-1.5, 1.5), 100, 400, et_function, 'zoom.mp4', 100, 1.01, 'twilight', graph_type='z')
