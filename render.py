@@ -7,7 +7,6 @@ from interesting_region import find_interesting_region
 from typing import Iterable
 
 
-# TODO: change re_lim and im_lim to plane_range and/or better support for factory_args
 def animate(filename: str, frames: int, colormap: str, iter_args: dict = {}, const_args: dict = {}, factory_args: dict = {},
             graph_type: str = 'i', dpi: int = 300, anim_kwargs: dict = {'fps': 24}):
 
@@ -24,9 +23,6 @@ def animate(filename: str, frames: int, colormap: str, iter_args: dict = {}, con
         for i, parameter_values in enumerate(zip(*iter_args.values())):
             one_time_args = dict(zip(iter_args.keys(), parameter_values))
             total_args = {**one_time_args, **const_args}
-            # if i > 0:
-            #    for key, val in f_onetime_args.items():
-            #        total_args[key] = val
 
             iter_count, z_values = generate_escape_time(**total_args)
             if graph_type == 'i':
@@ -41,14 +37,6 @@ def animate(filename: str, frames: int, colormap: str, iter_args: dict = {}, con
 
             animation_writer.grab_frame()
             print_progressbar(i + 1, frames, 'rendering:')
-
-            # f_one_time_args = {}
-            # for key, f in factory_args.items():
-            #     if not isinstance(key, str) and isinstance(key, Iterable):
-            #         f_args = dict(zip(key, f(iter_count, z_values)))
-            #     else:
-            #         f_args = {key: f(iter_count, z_values)}
-            #     f_one_time_args = {**f_one_time_args, **f_args}
 
 
 def auto_zoom(re_lim: Tuple[float, float], im_lim: Tuple[float, float], iterations: int, resolution: int,
