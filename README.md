@@ -1,14 +1,11 @@
 # fractals
 The code here is used to generate fractals.
 
-The project is currently being rewritten from scratch for easier maintainability and better features. 
-
 ## Functionality
-The functionality below only describes the old code in [old](./old/).
-- interactive_fractal.py file can have interactive escape-time fractals, meaning that the user can zoom in and out by clicking on the image.
-- fractals.py provides more extensive options of fractals, including (but not limited to) sierpinski's triangle and the Koch snowflake (sort of).
+[render.py](render.py) contains 2 functions for simple animation of escape time fractals. 
+For more complex fractals animations, use generate_escape_time. 
 
-## Prerequisites
+## Packages
 See [environment.yml](environment.yml).
 
 ## TODO
