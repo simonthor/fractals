@@ -3,7 +3,7 @@ The code here is used to generate fractals.
 
 ## Functionality
 [render.py](render.py) contains 2 functions for simple animation of escape time fractals. 
-For more complex fractals animations, use generate_escape_time. 
+For more complex fractals animations, use `generate_escape_time` in [fractal_generator.py](fractal_generator.py). 
 
 ## Packages
 See [environment.yml](environment.yml).
