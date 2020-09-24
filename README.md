@@ -8,6 +8,13 @@ For more complex fractals animations, use `generate_escape_time` in [fractal_gen
 ## Packages
 See [environment.yml](environment.yml).
 
+If you use conda (which I recommend but is not required), go to your project directory and run
+```bash
+conda env create -f environment.yml --prefix ./env
+conda activate ./env
+```
+Then all packages (and correct python version) will install automatically. 
+
 ## TODO
 - [ ] Add docstrings
 - [ ] GPU-accelerated computation (`cupy`?)
